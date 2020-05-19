@@ -9,3 +9,4 @@ $l['mybb2fa_activated_desc'] = "Two Factor Authentication is activated at the mo
 $l['mybb2fa_deactivate'] = "Deactivate";
 $l['mybb2fa_deactivated_desc'] = "Two Factor Authentication is deactivated at the moment. Note that you need a smartphone with an app like Google Authenticator or Authy to use Two Factor Authentication.";
 $l['mybb2fa_activate'] = "Activate";
+$l['mybb2fa_usercp_nav'] = "2FA";

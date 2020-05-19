@@ -4,9 +4,9 @@
 
 class Authenticator extends PHPGangsta_GoogleAuthenticator
 {
-    public function verifyCode($secret, $code, $discrepancy = 1)
+    public function verifyCode($secret, $code, $discrepancy = 1, $currentTimeSlice = null)
 	{
-		$test = parent::verifyCode($secret, $code, $discrepance);
+		$test = parent::verifyCode($secret, $code, $discrepance, $currentTimeSlice);
 
 		if($test === false)
 			// Code is wrong, no need to check it against our log
