@@ -256,10 +256,11 @@ function mybb2fa_db_tables()
 {
 	$tables = array(
 		'mybb2fa_log'		=> array(
-			'id'		=> "int UNSIGNED NOT NULL AUTO_INCREMENT",
-			'secret'	=> "varchar(16) NOT NULL",
-			'code'		=> "varchar(6) NOT NULL",
-			'time'		=> "int(10) NOT NULL DEFAULT '0'"
+			'id'			=> "int UNSIGNED NOT NULL AUTO_INCREMENT",
+			'secret'		=> "varchar(16) NOT NULL",
+			'code'			=> "varchar(6) NOT NULL",
+			'time'			=> "int(10) NOT NULL DEFAULT '0'",
+			'prymary_key'	=> 'id'
 		)
 	);
 
