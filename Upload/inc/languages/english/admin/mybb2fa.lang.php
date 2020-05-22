@@ -14,4 +14,4 @@ $l['mybb2fa_label'] = "Authentication code:";
 
 $l['mybb2fa_task_desc'] = 'Delete old codes.';
 
-$l['mybb2fa_required'] = "You are required to activate 2FA before navigating the ACP. You also need to generate verification codes.";
+$l['mybb2fa_required'] = 'You are required to activate 2FA before navigating the ACP. You also need to generate verification codes. <a href="{1}//usercp.php?action=mybb2fa&do=deactivate">Go to your UCP.</a>';

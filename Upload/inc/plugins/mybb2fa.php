@@ -30,6 +30,8 @@ if(!defined('IN_ADMINCP'))
 else
 {
 	$plugins->add_hook("admin_load", "mybb2fa_admin_do_login");
+
+	$plugins->add_hook("admin_formcontainer_output_row", "mybb2fa_admin_formcontainer_output_row");
 }
 
 // PLUGINLIBRARY
@@ -461,18 +463,32 @@ function mybb2fa_usercp()
 
 	if(isset($mybb->input['do']))
 	{
+		$uid = (int)$mybb->user['uid'];
+
 		if($mybb->input['do'] == "deactivate")
 		{
 			// Deactivating 2FA
 			$mybb->user['secret'] = "";
-			$db->update_query("users", array("secret" => ""), "uid={$mybb->user['uid']}");
+
+			$db->update_query("users", array("secret" => ""), "uid={$uid}");
+
+			$db->update_query("adminoptions", array("authsecret" => ""), "uid='{$uid}'");
+
+			$db->update_query("adminsessions", array("authenticated" => 1), "uid='{$uid}'");
 		}
 		else
 		{
 			// Activating 2FA
 			$secret = $auth->createSecret();
-			$mybb->user['secret'] = $secret;
+
+			$mybb->user['secret'] = $db->escape_string($secret);
+
 			$db->update_query("users", array("secret" => $secret), "uid={$mybb->user['uid']}");
+
+			$db->update_query("adminoptions", array("authsecret" => $secret), "uid={$mybb->user['uid']}");
+
+			$db->update_query("adminsessions", array("authenticated" => 0), "uid='{$uid}'");
+
 			// Redirect to avoid multiple different secrets
 			redirect("usercp.php?action=mybb2fa", $lang->mybb2fa_activated);
 		}
@@ -598,10 +614,38 @@ function mybb2fa_admin_do_login()
 	{
 		mybb2fa_lang_load();
 
-		flash_message($lang->mybb2fa_required, 'error');
+		flash_message($lang->sprintf($lang->mybb2fa_required, $mybb->settings['bburl']), 'error');
 
 		admin_redirect('index.php?module=home-preferences');
 	}
+}
+
+function mybb2fa_admin_formcontainer_output_row(&$args)
+{
+	global$lang, $admin_options, $mybb, $db;
+
+	if(empty($args['title']) || empty($lang->my2fa) || ($args['title'] != $lang->my2fa && my_strpos($args['title'], $lang->my2fa_qr) === false))
+	{
+		return;
+	}
+
+	if(!empty($admin_options['authsecret']) && $admin_options['authsecret'] != $mybb->user['secret'])
+	{
+		$uid = (int)$mybb->user['uid'];
+
+		if(empty($mybb->user['secret']))
+		{
+			$db->update_query('users', array('secret' => $db->escape_string($admin_options['authsecret'])), "uid='{$uid}'");
+		}
+		else
+		{
+			$db->update_query('adminoptions', array('authsecret' => $db->escape_string($mybb->user['secret'])), "uid='{$uid}'");
+		}
+	}
+
+	$args['title'] = $args['content'] = $args['description'] = '';
+
+	$args['options']['style'] = 'display: none !important;';
 }
 
 function mybb2fa_lang_load()
